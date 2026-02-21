@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { contentService } from '../lib/contentService';
 import { BlogPost } from '../types';
 import { ArrowLeft, Share2, Twitter, Facebook, Link as LinkIcon, Check } from 'lucide-react';
+import SEO from './SEO';
 
 const InsightDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,6 +51,13 @@ const InsightDetail: React.FC = () => {
 
   return (
     <div className="pt-28 pb-20 px-6 max-w-4xl mx-auto min-h-screen">
+      <SEO 
+        title={post.title}
+        description={post.excerpt}
+        keywords={post.tags}
+        url={`https://astrai.tech/#/insights/${post.id}`}
+        type="article"
+      />
       <Link to="/insights" className="inline-flex items-center gap-2 text-xs text-gray-500 hover:text-green-500 mb-8 transition-colors font-mono">
         <ArrowLeft className="w-3 h-3" /> BACK_TO_INDEX
       </Link>

@@ -5,6 +5,7 @@ import { contentService } from '../lib/contentService';
 import { BlogPost } from '../types';
 import GlitchText from './GlitchText';
 import { ArrowRight, Calendar, User, Tag } from 'lucide-react';
+import SEO from './SEO';
 
 const Insights: React.FC = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -16,6 +17,12 @@ const Insights: React.FC = () => {
 
   return (
     <div className="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
+      <SEO 
+        title="System Insights" 
+        description="DevLogs, Philosophy, and System Updates from the Astrai Core. Exploring the intersection of AI, cinema, and automation."
+        keywords={['DevLog', 'AI Philosophy', 'System Updates', 'Astrai Core']}
+        url="https://astrai.tech/#/insights"
+      />
       {/* Header */}
       <div className="mb-16 border-b border-white/10 pb-6 flex flex-col md:flex-row justify-between items-end gap-4">
         <div>

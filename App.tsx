@@ -16,6 +16,7 @@ import Insights from './components/Insights';
 import InsightDetail from './components/InsightDetail';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
+import SEO from './components/SEO';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { Terminal } from 'lucide-react';
 
@@ -27,6 +28,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenChat }) => {
   const { t } = useLanguage();
   return (
     <>
+      <SEO />
       <Hero onOpenChat={onOpenChat} />
       <Manifesto />
       <Modules />

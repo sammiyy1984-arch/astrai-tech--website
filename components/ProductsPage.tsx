@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import GlitchText from './GlitchText';
 import { ArrowUpRight } from 'lucide-react';
+import SEO from './SEO';
 
 // SVG Visual for Loom (Product 1)
 const LoomVisual = () => (
@@ -82,6 +83,12 @@ const ProductsPage: React.FC = () => {
 
   return (
     <div className="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
+      <SEO 
+        title={t.productsPage.title} 
+        description={t.productsPage.subtitle}
+        keywords={['Loom', 'YoutubeAuto', 'Shorts', 'AI Directing', 'Content Automation']}
+        url="https://astrai.tech/#/products"
+      />
       {/* Header */}
       <div className="mb-16 border-b border-white/10 pb-6 flex flex-col md:flex-row justify-between items-end gap-4">
         <div>

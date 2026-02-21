@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://astrai.tech/sitemap.xml

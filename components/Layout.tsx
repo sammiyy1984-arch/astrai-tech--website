@@ -78,28 +78,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
 
       {/* Footer / Server Status Bar */}
-      <footer className="fixed bottom-0 left-0 w-full bg-black/80 backdrop-blur-md border-t border-white/10 text-xs py-2 px-4 z-50 flex justify-between items-center font-mono tracking-wider">
-        <div className="flex gap-6 items-center">
-          <span className="flex items-center gap-2 text-green-500">
-             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-             {t.footer.lifeSigns}
-          </span>
-          <span className="hidden md:inline text-gray-500">{t.footer.load}</span>
+      <footer className="w-full bg-black/90 backdrop-blur-md border-t border-white/10 text-xs z-50 font-mono tracking-wider relative md:fixed md:bottom-0 md:left-0 flex flex-col md:flex-row justify-between items-start md:items-center p-8 md:py-2 md:px-4 gap-6 md:gap-0">
+        
+        {/* Left Section: Status */}
+        <div className="flex flex-col md:flex-row gap-2 md:gap-6 items-start md:items-center w-full md:w-auto">
+          <div className="flex items-center justify-between w-full md:w-auto">
+            <span className="flex items-center gap-2 text-green-500">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              {t.footer.lifeSigns}
+            </span>
+          </div>
+          <span className="text-gray-500">{t.footer.load}</span>
         </div>
         
-        <div className="hidden md:block text-gray-500">
-          {t.footer.location}
-        </div>
-
-        <div className="flex flex-col md:flex-row items-end md:items-center gap-2 md:gap-6">
-          <div className="text-gray-500 text-[10px] md:text-xs text-right md:text-left max-w-[200px] md:max-w-none">
-            {t.footer.address}
-          </div>
-          <a href="mailto:sammiyang@astrai.tech" className="text-gray-500 hover:text-green-500 transition-colors">
-            {t.footer.contact}
-          </a>
-          <div className="text-gray-600">
-            {t.footer.copyright}
+        {/* Right Section: Info */}
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 w-full md:w-auto">
+          <div className="flex flex-row items-center gap-6 w-full md:w-auto justify-between md:justify-start border-t border-white/10 pt-4 md:border-0 md:pt-0 mt-2 md:mt-0">
+            <a href="mailto:sammiyang@astrai.tech" className="text-gray-500 hover:text-green-500 transition-colors">
+              {t.footer.contact}
+            </a>
+            <div className="text-gray-600 whitespace-nowrap">
+              {t.footer.copyright}
+            </div>
           </div>
         </div>
       </footer>
