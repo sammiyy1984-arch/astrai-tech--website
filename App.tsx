@@ -12,11 +12,6 @@ import ProductsPage from './components/ProductsPage';
 import NotFound from './components/NotFound';
 import BootSequence from './components/BootSequence';
 import AIChatTerminal from './components/AIChatTerminal';
-import Insights from './components/Insights';
-import InsightDetail from './components/InsightDetail';
-import AdminLogin from './components/admin/AdminLogin';
-import AdminDashboard from './components/admin/AdminDashboard';
-import SEO from './components/SEO';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { Terminal } from 'lucide-react';
 
@@ -28,7 +23,6 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenChat }) => {
   const { t } = useLanguage();
   return (
     <>
-      <SEO />
       <Hero onOpenChat={onOpenChat} />
       <Manifesto />
       <Modules />
@@ -95,37 +89,27 @@ const AppContent: React.FC = () => {
       {!loading && (
         <HashRouter>
           <ScrollToTop />
-          <Routes>
-            {/* Admin Routes (No Layout) */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Layout>
+            <Routes>
+              <Route path="/" element={<HomePage onOpenChat={() => setIsChatOpen(true)} />} />
+              <Route path="/products" element={<ProductsPage />} />
+              <Route path="/evolution" element={<EvolutionLogs />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            
+            <AIChatTerminal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+            
+            {/* Floating Mobile Trigger if closed */}
+            {!isChatOpen && (
+              <button 
+                onClick={toggleChat}
+                className="fixed bottom-4 right-4 z-40 p-3 bg-black/80 border border-green-500/50 rounded-full text-green-500 hover:bg-green-500 hover:text-black transition-all shadow-lg shadow-green-900/20 backdrop-blur-md md:hidden"
+              >
+                <Terminal className="w-5 h-5" />
+              </button>
+            )}
 
-            {/* Public Routes (With Layout) */}
-            <Route path="*" element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<HomePage onOpenChat={() => setIsChatOpen(true)} />} />
-                  <Route path="/products" element={<ProductsPage />} />
-                  <Route path="/evolution" element={<EvolutionLogs />} />
-                  <Route path="/insights" element={<Insights />} />
-                  <Route path="/insights/:id" element={<InsightDetail />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                
-                <AIChatTerminal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-                
-                {/* Floating Mobile Trigger if closed */}
-                {!isChatOpen && (
-                  <button 
-                    onClick={toggleChat}
-                    className="fixed bottom-4 right-4 z-40 p-3 bg-black/80 border border-green-500/50 rounded-full text-green-500 hover:bg-green-500 hover:text-black transition-all shadow-lg shadow-green-900/20 backdrop-blur-md md:hidden"
-                  >
-                    <Terminal className="w-5 h-5" />
-                  </button>
-                )}
-              </Layout>
-            } />
-          </Routes>
+          </Layout>
         </HashRouter>
       )}
     </>

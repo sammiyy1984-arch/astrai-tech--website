@@ -27,25 +27,25 @@ export const translations = {
     },
     modules: {
       m1: {
-        name: "loom (v5.0)",
+        name: "Narrative Engine",
         slogan: "The ghost in the machine writes better than you.",
-        desc: "The world's first full-link AI directing system. Not a tool, but a virtual studio. It uses biomimetic departments to transmute vague inspiration into industrial-grade cinema.",
-        action: "[ Enter Studio ]",
-        features: ["Biomimetic Core", "Automated Directing"]
+        desc: "A logic-driven screenwriting core. It doesn't just format text; it understands structure, pacing, and archetype evolution.",
+        action: "[ Initialize Core ]",
+        features: ["Logic Inference", "Structure Quantizer"]
       },
       m2: {
-        name: "Astrai_youtubeAuto",
-        slogan: "Assembly without hands.",
-        desc: "A customized integrated production loop for high-quality film commentary channels. Transforms complex creative processes into data-driven automated pipelines.",
-        action: "[ Start Pipeline ]",
-        features: ["Nebula Auto-Producer", "Growth Engine"]
+        name: "Astrai Auto",
+        slogan: "Data-driven automated pipeline.",
+        desc: "A customized integrated production loop for high-quality video commentary channels. Transforms complex creative workflows into data-driven automated pipelines.",
+        action: "[ Start Assembly ]",
+        features: ["Auto-Producer", "Packaging Engine"]
       },
       m3: {
         name: "Astrai Shorts",
-        slogan: "Maximum vitality, minimum friction.",
-        desc: "Reconstructs long-form content into impactful short videos using advanced visual and semantic recognition. Maximizes content vitality through intelligent semantic anchor extraction.",
-        action: "[ Reconstruct ]",
-        features: ["Semantic Anchors", "Visual Packaging"]
+        slogan: "Maximize content vitality.",
+        desc: "Leverages advanced visual and semantic recognition to reconstruct long-form content into high-impact short videos.",
+        action: "[ Start Reconstruction ]",
+        features: ["Semantic Anchor Extraction", "Multi-platform Distribution"]
       }
     },
     productsPage: {
@@ -65,19 +65,19 @@ export const translations = {
         },
         {
           id: "P_02",
-          name: "Astrai_youtubeAuto",
+          name: "Astrai Auto",
           url: "#",
-          type: "All-in-One Content Automation",
-          desc: "A customized integrated production loop for high-quality film commentary channels. Transforms complex creative processes into data-driven automated pipelines.",
-          details: ["Nebula Auto-Producer", "Packaging Engine", "AI Growth Decision Model"]
+          type: "Automated Production Pipeline",
+          desc: "A customized integrated production loop for high-quality video commentary channels. Transforms complex creative workflows into data-driven automated pipelines.",
+          details: ["Auto-Producer: Dynamic tone control (Academic_Dark to Humor)", "Packaging Engine: Growth decision based on YouTube algorithms", "AI Viral Selection & High-concept Thumbnail Strategy"]
         },
         {
           id: "P_03",
           name: "Astrai Shorts",
           url: "#",
-          type: "AI Short-Form Reconstruction Platform",
-          desc: "Reconstructs long-form content into impactful short videos using advanced visual and semantic recognition. Maximizes content vitality through intelligent semantic anchor extraction.",
-          details: ["Semantic Anchor Extraction", "Automated Visual Packaging", "Multi-platform Distribution"]
+          type: "AI Short-Form Reconstruction",
+          desc: "Leverages advanced visual and semantic recognition to reconstruct long-form content into high-impact short videos, maximizing content vitality.",
+          details: ["Semantic Anchor Extraction: Identifies logical & emotional peaks", "Automated Visual Packaging: Mobile-first aesthetic optimization", "Multi-platform Distribution: Adapted for TikTok/Shorts/Reels"]
         }
       ]
     },
@@ -96,14 +96,14 @@ export const translations = {
       homeLink: "> Access System Logs",
       list: [
         {
-          version: 'v5.0.1',
-          module: '[loom v5.0]',
-          content: 'Biomimetic "Brain" module updated. Script logic inference accuracy increased by 14%.'
+          version: 'v2.4.0',
+          module: '[Narrative Engine]',
+          content: 'Logic Inference Model updated. Structure prediction accuracy increased by 14%.'
         },
         {
-          version: 'v1.2.0',
-          module: '[Nebula Auto-Producer]',
-          content: "Auto-sync latency reduced to 12ms. Added support for 'Academic_Dark' visual style."
+          version: 'v2.0.5',
+          module: '[Visual Forge]',
+          content: "Auto-sync latency reduced to 12ms. Added support for 'Noir' visual style."
         }
       ]
     },
@@ -113,9 +113,7 @@ export const translations = {
     footer: {
       lifeSigns: "Life Signs: Stable",
       load: "System Load: Normal",
-      location: "Location: Hong Kong Node",
-      contact: "Contact: sammiyang@astrai.tech",
-      address: "Address: Smart Space 2, Units 1205-08, Level 12, Cyberport 2, No.100 Cyberport Road, Hong Kong",
+      location: "Location: Singapore Node",
       copyright: "© 2026 Incubated by Astrai Core"
     },
     notfound: {
@@ -149,25 +147,25 @@ export const translations = {
     },
     modules: {
       m1: {
-        name: "loom (v5.0)",
+        name: "敘事引擎 (Narrative Engine)",
         slogan: "機器裡的幽靈寫得比你好。",
-        desc: "全球首個全鏈路 AI 編導系統。loom 不是單一工具，而是一座虛擬製片廠。通過四大仿生部門，將模糊靈感轉化為工業級影視成品。",
-        action: "[ 進入製片廠 ]",
-        features: ["仿生核心", "自動化編導"]
+        desc: "邏輯驅動的劇本創作核心。它不只是格式化文字，它理解結構、節奏和原型進化。",
+        action: "[ 啟動核心 ]",
+        features: ["邏輯推演", "結構量化"]
       },
       m2: {
-        name: "Astrai_youtubeAuto",
-        slogan: "無接觸式組裝。",
+        name: "Astrai Auto",
+        slogan: "數據驅動的自動化流水線。",
         desc: "專為高品質影視解說頻道定制的集成化生產閉環，將複雜的創作流程轉化為數據驅動的自動化流水線。",
-        action: "[ 啟動流水線 ]",
-        features: ["Nebula 生產管線", "增長決策引擎"]
+        action: "[ 開始組裝 ]",
+        features: ["動態語感控制", "增長決策引擎"]
       },
       m3: {
         name: "Astrai Shorts",
-        slogan: "最大化傳播生命力。",
-        desc: "利用先進的視覺與語義識別技術，將長篇內容精準重構為極具衝擊力的短視頻。通過智能語義錨點提取與自動化視覺包裝，極大化內容的傳播生命力。",
+        slogan: "極大化內容的傳播生命力。",
+        desc: "利用先進的視覺與語義識別技術，將長篇內容精準重構為極具衝擊力的短視頻。",
         action: "[ 開始重構 ]",
-        features: ["語義錨點", "視覺包裝"]
+        features: ["智能語義錨點", "自動化視覺包裝"]
       }
     },
     productsPage: {
@@ -187,19 +185,19 @@ export const translations = {
         },
         {
           id: "P_02",
-          name: "Astrai_youtubeAuto",
+          name: "Astrai Auto",
           url: "#",
-          type: "全鏈路 AI 影視內容自動化系統",
-          desc: "專為高品質影視解說頻道定制的集成化生產閉環，將複雜的創作流程轉化為數據驅動的自動化流水線。內置 Nebula Auto-Producer (自動化生產管線) 與 Packaging Engine (增長決策引擎)。",
-          details: ["Nebula Auto-Producer: 動態語感控制", "Packaging Engine: 增長決策引擎", "全自動產出與精準導流"]
+          type: "全自動內容生產管線",
+          desc: "專為高品質影視解說頻道定制的集成化生產閉環，將複雜的創作流程轉化為數據驅動的自動化流水線。",
+          details: ["Auto-Producer: 動態語感控制 (Academic_Dark/幽默) 與全自動渲染", "Packaging Engine: 基於 YouTube 算法的增長決策引擎", "AI 爆款篩選與高概念封面策略"]
         },
         {
           id: "P_03",
           name: "Astrai Shorts",
           url: "#",
-          type: "智能長視頻重塑與分發平台",
-          desc: "利用先進的視覺與語義識別技術，將長篇內容精準重構為極具衝擊力的短視頻。通過智能語義錨點提取與自動化視覺包裝，極大化內容的傳播生命力。",
-          details: ["智能語義錨點提取", "自動化視覺包裝系統", "多平台生態分發"]
+          type: "AI 短視頻重構平台",
+          desc: "利用先進的視覺與語義識別技術，將長篇內容精準重構為極具衝擊力的短視頻，極大化內容的傳播生命力。",
+          details: ["智能語義錨點提取: 識別邏輯高潮與情感爆發點", "自動化視覺包裝: 生成符合移動端審美的畫面", "多平台生態分發: 深度適配 TikTok/Shorts/Reels"]
         }
       ]
     },
@@ -218,14 +216,14 @@ export const translations = {
       homeLink: "> 訪問系統日誌",
       list: [
         {
-          version: 'v5.0.1',
-          module: '[loom v5.0]',
-          content: '仿生「大腦」模組更新。劇本邏輯推演準確率提升 14%。'
+          version: 'v2.4.0',
+          module: '[敘事引擎]',
+          content: '邏輯推理模型更新。結構預測準確率提升 14%。'
         },
         {
-          version: 'v1.2.0',
-          module: '[Nebula Auto-Producer]',
-          content: "自動同步延遲降低至 12ms。新增支持「Academic_Dark」視覺風格。"
+          version: 'v2.0.5',
+          module: '[視覺鍛造爐]',
+          content: "自動同步延遲降低至 12ms。新增支持「黑色電影」視覺風格。"
         }
       ]
     },
@@ -235,9 +233,7 @@ export const translations = {
     footer: {
       lifeSigns: "生命徵象：穩定",
       load: "系統負載：正常",
-      location: "位置：香港節點",
-      contact: "聯繫：sammiyang@astrai.tech",
-      address: "地址：香港數碼港道100號數碼港2座12樓1205-08室 Smart Space 2",
+      location: "位置：新加坡節點",
       copyright: "© 2026 由 Astrai Core 孵化"
     },
     notfound: {

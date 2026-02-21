@@ -13,11 +13,6 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ onOpenChat }) => {
   const { t } = useLanguage();
 
-  const scrollToManifesto = () => {
-    const element = document.getElementById('manifesto-section');
-    element?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <section className="min-h-screen flex flex-col items-center justify-center relative pt-20 pb-10 overflow-hidden">
       {/* Visual Core */}
@@ -75,20 +70,6 @@ const Hero: React.FC<HeroProps> = ({ onOpenChat }) => {
           </button>
         </motion.div>
       </div>
-
-      {/* CTA Scroll */}
-      <motion.button
-        onClick={scrollToManifesto}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 0.5 }}
-        className="absolute bottom-10 group flex flex-col items-center gap-2 text-xs text-gray-500 hover:text-green-400 transition-colors cursor-pointer"
-      >
-        <span className="font-mono">
-          {t.hero.cta}
-        </span>
-        <ArrowDown className="w-3 h-3 animate-bounce opacity-50 group-hover:opacity-100" />
-      </motion.button>
     </section>
   );
 };
