@@ -137,7 +137,12 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
     setToolActive(false);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+      if (!apiKey) {
+        throw new Error("API Key not found. Please check your environment variables (GEMINI_API_KEY).");
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       
       const memoryContext = JSON.stringify(ASTRAI_CORE_MEMORY);
       
@@ -202,12 +207,26 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
         }]);
       }
 
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Chat Error:", error);
+      let errorMessage = "ERROR: Connection severed. Neural overload.";
+      
+      if (error.message) {
+        if (error.message.includes("API Key")) {
+           errorMessage = `SYSTEM_ALERT: ${error.message}`;
+        } else if (error.message.includes("403")) {
+           errorMessage = "ACCESS_DENIED: API Key invalid or quota exceeded.";
+        } else if (error.message.includes("404")) {
+           errorMessage = "MODEL_NOT_FOUND: The neural core is offline.";
+        } else {
+           errorMessage = `SYSTEM_FAILURE: ${error.message.substring(0, 50)}...`;
+        }
+      }
+
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'model',
-        text: "ERROR: Connection severed. Neural overload.",
+        text: errorMessage,
         timestamp: Date.now()
       }]);
     } finally {
