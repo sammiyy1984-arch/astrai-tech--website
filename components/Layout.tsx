@@ -26,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Logo />
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex gap-6 text-xs font-mono tracking-wider">
+           <nav className="hidden md:flex gap-6 text-xs font-mono tracking-wider">
              <Link 
                to="/products" 
                className={`hover:text-green-500 transition-colors ${isActive('/products') ? 'text-green-500 decoration-green-500 underline underline-offset-4' : 'text-gray-500'}`}
@@ -34,10 +34,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                {`[ ${t.nav.products} ]`}
              </Link>
              <Link 
-               to="/insights" 
-               className={`hover:text-green-500 transition-colors ${isActive('/insights') ? 'text-green-500 decoration-green-500 underline underline-offset-4' : 'text-gray-500'}`}
+               to="/blog" 
+               className={`hover:text-green-500 transition-colors ${isActive('/blog') ? 'text-green-500 decoration-green-500 underline underline-offset-4' : 'text-gray-500'}`}
              >
-               {`[ INSIGHTS ]`}
+               {`[ ${t.nav.blog} ]`}
              </Link>
              <Link 
                to="/evolution" 
@@ -57,10 +57,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
              {t.nav.products}
            </Link>
            <Link 
-             to="/insights" 
+             to="/blog" 
              className="md:hidden text-xs text-gray-400 hover:text-white"
            >
-             INSIGHTS
+             {t.nav.blog}
            </Link>
 
           <button 

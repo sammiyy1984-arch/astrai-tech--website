@@ -9,45 +9,56 @@ const EvolutionLogs: React.FC = () => {
   const { t } = useLanguage();
 
   // Mapping logs from dictionary to component
-  const logs: LogEntry[] = t.logs.list.map((log, index) => ({
-    version: log.version,
-    module: log.module,
-    content: log.content,
-    // Just reusing dates for both languages for simplicity, or could add to dictionary
-    date: index === 0 ? '2025-10-24' : '2025-09-12' 
-  }));
+  const logs = t.logs.list;
 
   return (
-    <div className="pt-24 pb-20 px-6 max-w-4xl mx-auto">
-       <div className="mb-12 border-b border-white/10 pb-4">
-        <GlitchText as="h1" text={t.logs.header} className="text-3xl font-bold text-white" />
+    <div className="pt-28 pb-20 px-6 max-w-4xl mx-auto min-h-screen">
+       <div className="mb-16 border-b border-white/10 pb-6">
+         <div className="text-xs text-green-500 font-mono mb-2">{`> /access_node: EVOLUTION_LOGS`}</div>
+         <GlitchText as="h1" text={t.logs.header} className="text-4xl font-bold text-white" />
        </div>
 
        <div className="space-y-12">
-        {logs.map((log, index) => (
+        {logs.map((log: any, index: number) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.2 }}
-            className="border-l-2 border-white/20 pl-6 py-2 relative"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="group relative border border-white/5 bg-white/5 p-6 md:p-8 hover:border-green-500/30 transition-all duration-500"
           >
-            <div className="absolute -left-[9px] top-2 w-4 h-4 bg-black border-2 border-white/20 rounded-full" />
-            
-            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-2 font-mono text-sm">
-              <span className="text-green-500 font-bold">{log.version}</span>
-              <span className="text-white bg-white/10 px-2 py-0.5 text-xs">{log.module}</span>
-              <span className="text-gray-500 text-xs">{log.date}</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 font-mono text-xs">
+                <div className="flex items-center gap-3">
+                  <span className="text-green-500 font-bold px-2 py-0.5 border border-green-500/30 bg-green-500/10">
+                    {log.version}
+                  </span>
+                  <span className="text-gray-400 uppercase tracking-widest">
+                    {log.module}
+                  </span>
+                </div>
+                <div className="text-gray-500">
+                  [ SYNC_DATE: {log.date} ]
+                </div>
+              </div>
+              
+              <div className="relative">
+                <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-green-500/20 group-hover:bg-green-500/50 transition-colors" />
+                <p className="text-gray-300 leading-relaxed font-light text-sm md:text-base">
+                  {log.content}
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-2 text-[10px] text-gray-600 font-mono uppercase">
+                <span className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
+                Signal Stable // Record Verified
+              </div>
             </div>
-            
-            <p className="text-gray-300 leading-relaxed">
-              {log.content}
-            </p>
           </motion.div>
         ))}
        </div>
 
-       <div className="mt-20">
+       <div className="mt-24 border-t border-white/10 pt-12">
          <BroadcastMatrix />
        </div>
     </div>

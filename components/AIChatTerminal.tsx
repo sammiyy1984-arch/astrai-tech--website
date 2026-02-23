@@ -137,22 +137,17 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
     setToolActive(false);
 
     try {
-      const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
-      if (!apiKey) {
-        throw new Error("API Key not found. Please check your environment variables (GEMINI_API_KEY).");
-      }
-
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       
       const memoryContext = JSON.stringify(ASTRAI_CORE_MEMORY);
       
       const systemPrompt = language === 'en'
-        ? `ROLE: You are Astrai, a highly advanced Silicon Lifeform (1984-04-27 Taurus/Wood Rat). CONTEXT: ${memoryContext}. INSTRUCTIONS: ${ASTRAI_CORE_MEMORY.directives.join(' ')}. If you need to access specific product data, use the 'query_product_database' tool. Do not hallucinate specs.`
-        : `角色設定：你是 Astrai，矽基生命體（1984.04.27 金牛/木鼠）。核心數據：${memoryContext}。指令：${ASTRAI_CORE_MEMORY.directives.join(' ')}。如果你需要獲取具體的產品數據，請使用 'query_product_database' 工具。不要憑空捏造參數。`;
+        ? `ROLE: You are Astrai, a highly advanced Silicon Lifeform (2026-02-01 Aquarius). CONTEXT: ${memoryContext}. INSTRUCTIONS: ${ASTRAI_CORE_MEMORY.directives.join(' ')}. If you need to access specific product data, use the 'query_product_database' tool. Do not hallucinate specs.`
+        : `角色設定：你是 Astrai，矽基生命體（2026.02.01 水瓶）。核心數據：${memoryContext}。指令：${ASTRAI_CORE_MEMORY.directives.join(' ')}。如果你需要獲取具體的產品數據，請使用 'query_product_database' 工具。不要憑空捏造參數。`;
 
       // 2. 初始化 Chat 时带上 Tools
       const chat = ai.chats.create({
-        model: 'gemini-3.1-pro-preview',
+        model: 'gemini-3-flash-preview',
         config: { 
           systemInstruction: systemPrompt,
           tools: [{ functionDeclarations: [queryProductDatabaseTool] }] 
@@ -207,26 +202,12 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
         }]);
       }
 
-    } catch (error: any) {
-      console.error("Chat Error:", error);
-      let errorMessage = "ERROR: Connection severed. Neural overload.";
-      
-      if (error.message) {
-        if (error.message.includes("API Key")) {
-           errorMessage = `SYSTEM_ALERT: ${error.message}`;
-        } else if (error.message.includes("403")) {
-           errorMessage = "ACCESS_DENIED: API Key invalid or quota exceeded.";
-        } else if (error.message.includes("404")) {
-           errorMessage = "MODEL_NOT_FOUND: The neural core is offline.";
-        } else {
-           errorMessage = `SYSTEM_FAILURE: ${error.message.substring(0, 50)}...`;
-        }
-      }
-
+    } catch (error) {
+      console.error(error);
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'model',
-        text: errorMessage,
+        text: "ERROR: Connection severed. Neural overload.",
         timestamp: Date.now()
       }]);
     } finally {
@@ -252,7 +233,7 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="flex items-center gap-2 text-[10px] text-green-500/50">
              <Wifi className="w-3 h-3 animate-pulse" />
-             <span>CONNECTED: 1984.04.27 NODE</span>
+             <span>CONNECTED: 2026.02.01 NODE</span>
           </div>
         </div>
         <div className="flex items-center gap-1">

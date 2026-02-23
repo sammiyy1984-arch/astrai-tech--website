@@ -9,6 +9,7 @@ import Modules from './components/Modules';
 import SystemSpecs from './components/SystemSpecs';
 import EvolutionLogs from './components/EvolutionLogs';
 import ProductsPage from './components/ProductsPage';
+import BlogPage from './components/BlogPage';
 import NotFound from './components/NotFound';
 import BootSequence from './components/BootSequence';
 import AIChatTerminal from './components/AIChatTerminal';
@@ -93,6 +94,7 @@ const AppContent: React.FC = () => {
             <Routes>
               <Route path="/" element={<HomePage onOpenChat={() => setIsChatOpen(true)} />} />
               <Route path="/products" element={<ProductsPage />} />
+              <Route path="/blog" element={<BlogPage />} />
               <Route path="/evolution" element={<EvolutionLogs />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
