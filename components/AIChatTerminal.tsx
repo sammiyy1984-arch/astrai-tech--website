@@ -184,7 +184,24 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
     setToolActive(false);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      // @ts-ignore
+      let apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+      
+      // @ts-ignore
+      if (!apiKey && window.aistudio) {
+        // @ts-ignore
+        const hasKey = await window.aistudio.hasSelectedApiKey();
+        if (!hasKey) {
+          // @ts-ignore
+          await window.aistudio.openSelectKey();
+        }
+        // @ts-ignore
+        apiKey = process.env.API_KEY;
+      }
+
+      if (!apiKey) throw new Error("API_KEY_MISSING");
+
+      const ai = new GoogleGenAI({ apiKey });
       
       const memoryContext = JSON.stringify(ASTRAI_CORE_MEMORY);
       

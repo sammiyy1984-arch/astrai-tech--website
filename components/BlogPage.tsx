@@ -80,9 +80,23 @@ const BlogPage: React.FC = () => {
     setError(null);
 
     try {
-      // Initialize GenAI
       // @ts-ignore
-      const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+      let apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+      
+      // If key is missing, try to check if user needs to select one
+      // @ts-ignore
+      if (!apiKey && window.aistudio) {
+        // @ts-ignore
+        const hasKey = await window.aistudio.hasSelectedApiKey();
+        if (!hasKey) {
+          setError("AUTH_REQUIRED");
+          setLoading(false);
+          return;
+        }
+        // @ts-ignore
+        apiKey = process.env.API_KEY;
+      }
+
       if (!apiKey) {
         throw new Error("Neural Link Severed: API Key Missing");
       }
@@ -317,8 +331,19 @@ const BlogPage: React.FC = () => {
              </div>
           )}
           {error && (
-            <div className="text-xs text-red-500 font-mono">
-              [{error}]
+            <div className="flex flex-col items-end gap-2">
+              <div className="text-xs text-red-500 font-mono">
+                [{error === 'AUTH_REQUIRED' ? 'NEURAL_LINK_AUTH_REQUIRED' : error}]
+              </div>
+              {error === 'AUTH_REQUIRED' && (
+                <button 
+                  // @ts-ignore
+                  onClick={async () => { await window.aistudio.openSelectKey(); fetchDailyNews(); }}
+                  className="text-[10px] bg-red-500/10 border border-red-500/30 text-red-500 px-2 py-1 hover:bg-red-500 hover:text-white transition-all font-mono"
+                >
+                  [ RE-ESTABLISH LINK ]
+                </button>
+              )}
             </div>
           )}
         </div>
