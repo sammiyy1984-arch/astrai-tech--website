@@ -440,17 +440,30 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
           </div>
         ))}
         {isThinking && (
-          <div className="p-3 border border-green-500/30 text-xs text-green-500/60 font-mono">
-             {toolActive ? (
-               <span className="flex items-center gap-2 text-yellow-500 animate-pulse">
-                  <Lock className="w-3 h-3" /> ACCESSING SECURE DATABASE...
-               </span>
-             ) : (
-               <span className="flex items-center animate-pulse">
-                  <Database className="w-3 h-3 inline mr-2" />
-                  DECRYPTING... {dataStream.substring(0, 10)}
-               </span>
-             )}
+          <div className="flex flex-col gap-2 p-3 border border-green-500/30 bg-green-500/5 rounded-lg">
+            <div className="flex items-center gap-2 text-xs text-green-500">
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce"></span>
+              </div>
+              <span className="font-bold tracking-widest uppercase opacity-80">
+                {language === 'en' ? 'Astrai is thinking' : 'Astrai 正在思考'}
+              </span>
+            </div>
+            
+            <div className="text-[10px] text-green-500/40 font-mono overflow-hidden whitespace-nowrap">
+               {toolActive ? (
+                 <span className="flex items-center gap-2 text-yellow-500/70">
+                    <Lock className="w-3 h-3" /> [SYSTEM_LOG]: ACCESSING_SECURE_DATABASE...
+                 </span>
+               ) : (
+                 <span className="flex items-center">
+                    <Database className="w-3 h-3 inline mr-2 opacity-50" />
+                    {dataStream}
+                 </span>
+               )}
+            </div>
           </div>
         )}
       </div>
