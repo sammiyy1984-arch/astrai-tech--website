@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Cpu, Terminal, Database, Wifi, Lock, Maximize2, Minimize2, ExternalLink, Activity, Zap, ShieldCheck } from 'lucide-react';
 import { GoogleGenAI, FunctionDeclaration, Type } from "@google/genai";
+import { getGeminiClient } from '../src/services/geminiService';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ASTRAI_CORE_MEMORY } from '../lib/astrai_memory';
@@ -184,24 +185,7 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
     setToolActive(false);
 
     try {
-      // @ts-ignore
-      let apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
-      
-      // @ts-ignore
-      if (!apiKey && window.aistudio) {
-        // @ts-ignore
-        const hasKey = await window.aistudio.hasSelectedApiKey();
-        if (!hasKey) {
-          // @ts-ignore
-          await window.aistudio.openSelectKey();
-        }
-        // @ts-ignore
-        apiKey = process.env.API_KEY;
-      }
-
-      if (!apiKey) throw new Error("API_KEY_MISSING");
-
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = await getGeminiClient();
       
       const memoryContext = JSON.stringify(ASTRAI_CORE_MEMORY);
       

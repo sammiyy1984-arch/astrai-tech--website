@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import GlitchText from './GlitchText';
 import { ArrowUpRight, Calendar, RefreshCw, Cpu, X, Terminal } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
+import { getGeminiClient, handleAiError } from '../src/services/geminiService';
 
 interface BlogPost {
   id: string;
@@ -80,28 +80,20 @@ const BlogPage: React.FC = () => {
     setError(null);
 
     try {
-      // @ts-ignore
-      let apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
-      
-      // If key is missing, try to check if user needs to select one
-      // @ts-ignore
-      if (!apiKey && window.aistudio) {
-        // @ts-ignore
-        const hasKey = await window.aistudio.hasSelectedApiKey();
-        if (!hasKey) {
-          setError("AUTH_REQUIRED");
-          setLoading(false);
-          return;
-        }
-        // @ts-ignore
-        apiKey = process.env.API_KEY;
-      }
+      const ai = await getGeminiClient();
 
-      if (!apiKey) {
-        throw new Error("Neural Link Severed: API Key Missing");
-      }
-      
-      const ai = new GoogleGenAI({ apiKey });
+      // Helper for retrying API calls
+      const withRetry = async (fn: () => Promise<any>, retries = 2) => {
+        for (let i = 0; i <= retries; i++) {
+          try {
+            return await fn();
+          } catch (err) {
+            if (i === retries) throw err;
+            console.warn(`API call failed, retrying (${i + 1}/${retries})...`, err);
+            await new Promise(resolve => setTimeout(resolve, 1500 * (i + 1)));
+          }
+        }
+      };
 
       const prompt = language === 'zh-TW' 
         ? `你是 Astrai，一个硅基生命体。请使用 Google 搜索今天全球**影响力最大、最重要**的 3 条 AI 新闻。
@@ -135,13 +127,13 @@ const BlogPage: React.FC = () => {
            - date: Today's date (YYYY.MM.DD)
            Do not include markdown formatting, return raw JSON only.`;
 
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+      const response = await withRetry(() => ai.models.generateContent({
+        model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
           tools: [{ googleSearch: {} }]
         }
-      });
+      }));
 
       const text = response.text;
       if (!text) throw new Error("Empty response from Neural Core");
@@ -187,10 +179,23 @@ const BlogPage: React.FC = () => {
            - prediction: Probabilistic deduction (under 50 words, regarding next evolutionary steps)
            Do not include markdown formatting, return raw JSON only.`;
 
-      const insightResponse = await ai.models.generateContent({
-        model: "gemini-3.1-pro-preview",
-        contents: insightPrompt
-      });
+      // Generate Deep Insight with fallback to flash if pro fails
+      const generateInsight = async () => {
+        try {
+          return await ai.models.generateContent({
+            model: "gemini-3.1-pro-preview",
+            contents: insightPrompt
+          });
+        } catch (e) {
+          console.warn("Pro model failed, falling back to flash", e);
+          return await ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: insightPrompt
+          });
+        }
+      };
+
+      const insightResponse = await withRetry(generateInsight);
 
       const insightText = insightResponse.text || "";
       let insightData;
@@ -208,8 +213,8 @@ const BlogPage: React.FC = () => {
       localStorage.setItem(cacheKey, JSON.stringify({ posts: formattedPosts, insight: insightData }));
 
     } catch (err: any) {
-      console.error("AI Fetch Error:", err);
-      setError(err.message || "Signal Interrupted");
+      const errorType = handleAiError(err);
+      setError(errorType);
     } finally {
       setLoading(false);
     }
@@ -220,13 +225,7 @@ const BlogPage: React.FC = () => {
 
     setGeneratingContent(true);
     try {
-      // @ts-ignore
-      const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
-      if (!apiKey) {
-        throw new Error("Neural Link Severed: API Key Missing");
-      }
-      
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = await getGeminiClient();
       
       const prompt = language === 'zh-TW'
         ? `你是 Astrai。请根据以下新闻标题和摘要，生成一篇完整的深度观察日志（约300-500字）。
