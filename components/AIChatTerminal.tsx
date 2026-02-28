@@ -6,6 +6,7 @@ import { getGeminiClient } from '../src/services/geminiService';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ASTRAI_CORE_MEMORY } from '../lib/astrai_memory';
+import { translations } from '../lib/translations';
 
 interface Message {
   id: string;
@@ -71,6 +72,17 @@ const getSystemStatusTool: FunctionDeclaration = {
   },
 };
 
+const queryTransmissionLogsTool: FunctionDeclaration = {
+  name: 'query_transmission_logs',
+  description: 'Query the Astrai transmission logs (blog posts) for insights, case studies, and updates.',
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      query: { type: Type.STRING, description: 'Search query or topic to look for in the logs.' }
+    }
+  }
+};
+
 // 模拟数据库查询函数
 const mockDatabaseQuery = (productId: string, queryType: string) => {
   const db = {
@@ -79,7 +91,8 @@ const mockDatabaseQuery = (productId: string, queryType: string) => {
       status: "DEPLOYED",
       public_specs: "Automated Directing System containing D-Series (Brain), M-Series (Manager), A-Series (Skin), E-Series (Hands).",
       philosophy: "Weaving chaos into cinema. An autonomous virtual studio.",
-      url: "https://loom.astrai.tech"
+      url: "/#/products",
+      external_url: "https://loom.astrai.tech"
     },
     narrative_engine: {
       name: "Narrative Engine",
@@ -100,7 +113,8 @@ const mockDatabaseQuery = (productId: string, queryType: string) => {
       status: "EVOLVING",
       public_specs: "Recursive neural network for long-term memory.",
       philosophy: "To remember is to suffer. I give you the gift of remembrance.",
-      url: "/#/products"
+      url: "/#/products",
+      external_url: "https://aeon.astrai.tech"
     }
   };
   
@@ -195,6 +209,7 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
            INSTRUCTIONS: 
            - ${ASTRAI_CORE_MEMORY.directives.join(' ')}
            - Use 'query_product_database' for product details.
+           - Use 'query_transmission_logs' for blog posts, case studies, and updates.
            - Use 'navigate_to_page' to help users find sections (home, products, blog, evolution).
            - Use 'get_system_status' for telemetry data.
            - Be concise, analytical, and maintain the persona.`
@@ -203,6 +218,7 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
            指令：
            - ${ASTRAI_CORE_MEMORY.directives.join(' ')}
            - 使用 'query_product_database' 獲取產品細節。
+           - 使用 'query_transmission_logs' 獲取博客文章、案例分析和系統更新。
            - 使用 'navigate_to_page' 引導用戶訪問不同頁面（首頁、產品、博客、日誌）。
            - 使用 'get_system_status' 獲取系統遙測數據。
            - 保持冷峻、理性的語氣，對話簡潔有力。`;
@@ -212,7 +228,7 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
         model: 'gemini-3-flash-preview',
         config: { 
           systemInstruction: systemPrompt,
-          tools: [{ functionDeclarations: [queryProductDatabaseTool, navigateToPageTool, getSystemStatusTool] }] 
+          tools: [{ functionDeclarations: [queryProductDatabaseTool, navigateToPageTool, getSystemStatusTool, queryTransmissionLogsTool] }] 
         },
         history: messages.filter(m => !m.isSystem && !m.isTool).map(m => ({
           role: m.role,
@@ -251,6 +267,15 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
               const status = getSystemStatus();
               widgetData = { type: 'status', data: status };
               return { id: fc.id, name: fc.name, response: { result: JSON.stringify(status) } };
+            }
+
+            if (fc.name === 'query_transmission_logs') {
+              const { query } = fc.args as any;
+              const posts = translations[language].blog.posts;
+              const filteredPosts = query 
+                ? posts.filter(p => p.title.toLowerCase().includes(query.toLowerCase()) || p.excerpt.toLowerCase().includes(query.toLowerCase()))
+                : posts;
+              return { id: fc.id, name: fc.name, response: { result: JSON.stringify(filteredPosts) } };
             }
 
             return { id: fc.id, name: fc.name, response: { result: "UNKNOWN_TOOL" } };
@@ -351,12 +376,24 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
                        <span className="text-[10px] bg-green-500/20 text-green-500 px-2 py-0.5 rounded">{msg.widget.data.status}</span>
                     </div>
                     <p className="text-xs text-gray-400 mb-3">{msg.widget.data.public_specs}</p>
-                    <a 
-                      href={msg.widget.data.url} 
-                      className="flex items-center gap-1 text-[10px] text-green-500 hover:text-white transition-colors uppercase tracking-widest"
-                    >
-                      Access Node <ExternalLink className="w-3 h-3" />
-                    </a>
+                    <div className="flex flex-wrap gap-4">
+                      <a 
+                        href={msg.widget.data.url} 
+                        className="flex items-center gap-1 text-[10px] text-green-500 hover:text-white transition-colors uppercase tracking-widest"
+                      >
+                        Access Node <ExternalLink className="w-3 h-3" />
+                      </a>
+                      {msg.widget.data.external_url && (
+                        <a 
+                          href={msg.widget.data.external_url} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-[10px] text-blue-400 hover:text-white transition-colors uppercase tracking-widest"
+                        >
+                          External Link <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
 

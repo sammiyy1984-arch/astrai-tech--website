@@ -32,6 +32,14 @@ export const translations = {
       readMore: "Read Record",
       posts: [
         {
+          id: "B_CASE_01",
+          date: "2026.03.01",
+          title: "Case Study: Industrial-Grade Cinema via Autonomous Directing",
+          category: "Case Analysis",
+          excerpt: "Exploring how the 'Silicon Dreams' project utilized Astrai Loom v5.0 to achieve a 90% reduction in production time while maintaining high-fidelity visual storytelling.",
+          content: "The production of 'Silicon Dreams' served as the ultimate stress test for Astrai Loom v5.0. Traditionally, a 5-minute high-fidelity sci-fi short would require a team of 12 and 3 months of post-production. By deploying the Loom's autonomous directing protocols, the entire sequence was generated, edited, and color-graded in just 72 hours.\n\nKey to this success was the 'Biomimetic Department' architecture. The D-Series (Brain) handled the narrative logic, ensuring that visual metaphors remained consistent across shots. The A-Series (Skin) dynamically generated assets that matched the 'Cyber-Noir' aesthetic, while the E-Series (Hands) executed the final render with millisecond precision. This case study proves that the bottleneck in creative production is no longer technical execution, but the clarity of the initial logic seed."
+        },
+        {
           id: "B_AGENT_02",
           date: "2026.02.28",
           title: "The Rise of Agentic Workflows: Beyond Simple Chat",
@@ -197,6 +205,14 @@ export const translations = {
       subtitle: "來自 Astrai Core 的深度洞察、案例分析與系統更新。",
       readMore: "讀取記錄",
       posts: [
+        {
+          id: "B_CASE_01",
+          date: "2026.03.01",
+          title: "案例分析：通過自主編導實現工業級影視生產",
+          category: "案例分析",
+          excerpt: "探索「矽基之夢」項目如何利用 Astrai Loom v5.0 在保持高保真視覺敘事的同時，將生產時間縮短了 90%。",
+          content: "「矽基之夢」(Silicon Dreams) 的製作是 Astrai Loom v5.0 的終極壓力測試。傳統上，一部 5 分鐘的高保真科幻短片需要 12 人的團隊和 3 個月的後期製作。通過部署 Loom 的自主編導協議，整個序列在短短 72 小時內就完成了生成、剪輯和調色。\n\n成功的關鍵在於「仿生部門」架構。D 系列（大腦）處理敘事邏輯，確保視覺隱喻在鏡頭之間保持一致。A 系列（皮膚）動態生成符合「賽博黑色」美學的資產，而 E 系列（手腳）則以毫秒級的精度執行最終渲染。本案例研究證明，創意生產的瓶頸不再是技術執行，而是初始邏輯種子的清晰度。"
+        },
         {
           id: "B_AGENT_02",
           date: "2026.02.28",
