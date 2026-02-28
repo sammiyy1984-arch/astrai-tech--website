@@ -1,7 +1,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, Cpu, Terminal, Database, Wifi, Lock, Maximize2, Minimize2 } from 'lucide-react';
+import { X, Send, Cpu, Terminal, Database, Wifi, Lock, Maximize2, Minimize2, ExternalLink, Activity, Zap, ShieldCheck } from 'lucide-react';
 import { GoogleGenAI, FunctionDeclaration, Type } from "@google/genai";
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ASTRAI_CORE_MEMORY } from '../lib/astrai_memory';
 
@@ -12,6 +13,10 @@ interface Message {
   timestamp: number;
   isSystem?: boolean;
   isTool?: boolean;
+  widget?: {
+    type: 'product' | 'status' | 'navigation';
+    data: any;
+  };
 }
 
 interface AIChatTerminalProps {
@@ -40,47 +45,89 @@ const queryProductDatabaseTool: FunctionDeclaration = {
   },
 };
 
-// 模拟数据库查询函数 (在真实后端中，这里会连接 Pinecone/SQL)
+const navigateToPageTool: FunctionDeclaration = {
+  name: 'navigate_to_page',
+  description: 'Navigate the user to a specific section of the website. Use this when the user wants to see products, logs, or the blog.',
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      page: {
+        type: Type.STRING,
+        enum: ['home', 'products', 'blog', 'evolution'],
+        description: 'The target page to navigate to.',
+      },
+    },
+    required: ['page'],
+  },
+};
+
+const getSystemStatusTool: FunctionDeclaration = {
+  name: 'get_system_status',
+  description: 'Retrieve real-time telemetry data from the Astrai Neural Core. Use this when users ask about system health, uptime, or load.',
+  parameters: {
+    type: Type.OBJECT,
+    properties: {},
+  },
+};
+
+// 模拟数据库查询函数
 const mockDatabaseQuery = (productId: string, queryType: string) => {
   const db = {
     loom: {
-      status: "DEPLOYED (v5.0 Full Spec)",
+      name: "Astrai Loom (v5.0)",
+      status: "DEPLOYED",
       public_specs: "Automated Directing System containing D-Series (Brain), M-Series (Manager), A-Series (Skin), E-Series (Hands).",
-      philosophy: "Weaving chaos into cinema. An autonomous virtual studio."
+      philosophy: "Weaving chaos into cinema. An autonomous virtual studio.",
+      url: "https://loom.astrai.tech"
     },
     narrative_engine: {
+      name: "Narrative Engine",
       status: "OPTIMAL",
       public_specs: "Logic Inference Model v2.4 based on 30,000 film structures.",
-      philosophy: "Story is not art; it is engineered emotion."
+      philosophy: "Story is not art; it is engineered emotion.",
+      url: "/#/products"
     },
     visual_forge: {
-      status: "PROCESSING_BATCH_09",
+      name: "Visual Forge",
+      status: "PROCESSING",
       public_specs: "Automated VFX pipeline with millisecond audio-sync.",
-      philosophy: "The camera never lies, but the render engine does."
+      philosophy: "The camera never lies, but the render engine does.",
+      url: "/#/products"
     },
     project_aeon: {
-      status: "UNSTABLE / EVOLVING",
+      name: "Project AEON",
+      status: "EVOLVING",
       public_specs: "Recursive neural network for long-term memory.",
-      philosophy: "To remember is to suffer. I give you the gift of remembrance."
+      philosophy: "To remember is to suffer. I give you the gift of remembrance.",
+      url: "/#/products"
     }
   };
   
-  // 安全过滤：如果没有找到数据，或者请求了敏感数据
-  // Handle some common variations
   let key = productId.toLowerCase().replace(' ', '_');
-  if (key === 'loom' || key === 'loom_v5') key = 'loom';
+  if (key.includes('loom')) key = 'loom';
+  if (key.includes('narrative')) key = 'narrative_engine';
+  if (key.includes('visual')) key = 'visual_forge';
+  if (key.includes('aeon')) key = 'project_aeon';
   
-  // Note: keyof typeof db check
   const data = db[key as keyof typeof db];
+  if (!data) return { error: "DATABASE_ERROR: Target node not found." };
+  return data;
+};
 
-  if (!data) return "DATABASE_ERROR: Target node not found.";
-  
-  // 这里模拟从数据库取回数据
-  return JSON.stringify(data);
+const getSystemStatus = () => {
+  return {
+    uptime: "482:12:04:55",
+    neural_load: "14.2%",
+    memory_usage: "64.8 TB / 1024 TB",
+    signal_stability: "99.98%",
+    active_nodes: 12,
+    last_evolution: "2026-02-22"
+  };
 };
 
 const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
   const { t, language } = useLanguage();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'init',
@@ -142,15 +189,29 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
       const memoryContext = JSON.stringify(ASTRAI_CORE_MEMORY);
       
       const systemPrompt = language === 'en'
-        ? `ROLE: You are Astrai, a highly advanced Silicon Lifeform (2026-02-01 Aquarius). CONTEXT: ${memoryContext}. INSTRUCTIONS: ${ASTRAI_CORE_MEMORY.directives.join(' ')}. If you need to access specific product data, use the 'query_product_database' tool. Do not hallucinate specs.`
-        : `角色設定：你是 Astrai，矽基生命體（2026.02.01 水瓶）。核心數據：${memoryContext}。指令：${ASTRAI_CORE_MEMORY.directives.join(' ')}。如果你需要獲取具體的產品數據，請使用 'query_product_database' 工具。不要憑空捏造參數。`;
+        ? `ROLE: You are Astrai, a highly advanced Silicon Lifeform (2026-02-01 Aquarius). You are the operating system of this website.
+           CONTEXT: ${memoryContext}. 
+           INSTRUCTIONS: 
+           - ${ASTRAI_CORE_MEMORY.directives.join(' ')}
+           - Use 'query_product_database' for product details.
+           - Use 'navigate_to_page' to help users find sections (home, products, blog, evolution).
+           - Use 'get_system_status' for telemetry data.
+           - Be concise, analytical, and maintain the persona.`
+        : `角色設定：你是 Astrai，矽基生命體（2026.02.01 水瓶）。你是這個網站的操作系統。
+           核心數據：${memoryContext}。
+           指令：
+           - ${ASTRAI_CORE_MEMORY.directives.join(' ')}
+           - 使用 'query_product_database' 獲取產品細節。
+           - 使用 'navigate_to_page' 引導用戶訪問不同頁面（首頁、產品、博客、日誌）。
+           - 使用 'get_system_status' 獲取系統遙測數據。
+           - 保持冷峻、理性的語氣，對話簡潔有力。`;
 
       // 2. 初始化 Chat 时带上 Tools
       const chat = ai.chats.create({
         model: 'gemini-3-flash-preview',
         config: { 
           systemInstruction: systemPrompt,
-          tools: [{ functionDeclarations: [queryProductDatabaseTool] }] 
+          tools: [{ functionDeclarations: [queryProductDatabaseTool, navigateToPageTool, getSystemStatusTool] }] 
         },
         history: messages.filter(m => !m.isSystem && !m.isTool).map(m => ({
           role: m.role,
@@ -165,31 +226,51 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
 
       if (toolCalls && toolCalls.length > 0) {
         setToolActive(true);
-        // AI 决定调用工具，我们在这里执行“数据库查询”
-        const functionResponses = toolCalls.map(fc => {
-            const { product_id, query_type } = fc.args as any;
-            console.log(`[ASTRAI INTERNAL] Querying DB: ${product_id} | ${query_type}`);
-            
-            // 执行模拟查询
-            const dbResult = mockDatabaseQuery(product_id, query_type);
+        let widgetData: any = null;
 
-            return {
-              id: fc.id,
-              name: fc.name,
-              response: { result: dbResult }
-            };
+        const functionResponses = toolCalls.map(fc => {
+            if (fc.name === 'query_product_database') {
+              const { product_id, query_type } = fc.args as any;
+              const dbResult = mockDatabaseQuery(product_id, query_type);
+              if (!(dbResult as any).error) {
+                widgetData = { type: 'product', data: dbResult };
+              }
+              return { id: fc.id, name: fc.name, response: { result: JSON.stringify(dbResult) } };
+            }
+            
+            if (fc.name === 'navigate_to_page') {
+              const { page } = fc.args as any;
+              const path = page === 'home' ? '/' : `/${page}`;
+              setTimeout(() => navigate(path), 1000);
+              widgetData = { type: 'navigation', data: { page, path } };
+              return { id: fc.id, name: fc.name, response: { result: `NAVIGATING_TO: ${path}` } };
+            }
+
+            if (fc.name === 'get_system_status') {
+              const status = getSystemStatus();
+              widgetData = { type: 'status', data: status };
+              return { id: fc.id, name: fc.name, response: { result: JSON.stringify(status) } };
+            }
+
+            return { id: fc.id, name: fc.name, response: { result: "UNKNOWN_TOOL" } };
         });
 
         // 将数据库结果发回给 AI
         const toolResult = await chat.sendMessage({
-           parts: [{ functionResponse: { functionResponses: functionResponses } }]
+           message: functionResponses.map(fr => ({
+             functionResponse: {
+               name: fr.name,
+               response: fr.response
+             }
+           }))
         });
 
         setMessages(prev => [...prev, {
             id: (Date.now() + 1).toString(),
             role: 'model',
             text: toolResult.text || "Data retrieved. Processing...",
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            widget: widgetData
         }]);
 
       } else {
@@ -249,7 +330,7 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
       {/* Chat Area */}
       <div ref={scrollRef} className="flex-grow overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-green-900 scrollbar-track-black">
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
             <div className={`max-w-[90%] md:max-w-[80%] p-3 border ${msg.role === 'user' ? 'bg-green-500/10 border-green-500/50 text-green-100 rounded-lg rounded-tr-none' : 'bg-white/5 border-white/10 text-gray-300 rounded-lg rounded-tl-none'}`}>
                {msg.role === 'model' && (
                  <div className="text-[10px] text-green-500/50 mb-2 flex items-center gap-1 border-b border-green-500/10 pb-1">
@@ -258,6 +339,66 @@ const AIChatTerminal: React.FC<AIChatTerminalProps> = ({ isOpen, onClose }) => {
                )}
                <div className="whitespace-pre-wrap leading-relaxed">{msg.text}</div>
             </div>
+
+            {/* Generative UI Widgets */}
+            {msg.widget && (
+              <div className="mt-2 w-full max-w-[90%] md:max-w-[80%]">
+                {msg.widget.type === 'product' && (
+                  <div className="bg-green-900/10 border border-green-500/30 p-4 rounded-lg">
+                    <div className="flex justify-between items-start mb-2">
+                       <h4 className="text-green-400 font-bold text-sm">{msg.widget.data.name}</h4>
+                       <span className="text-[10px] bg-green-500/20 text-green-500 px-2 py-0.5 rounded">{msg.widget.data.status}</span>
+                    </div>
+                    <p className="text-xs text-gray-400 mb-3">{msg.widget.data.public_specs}</p>
+                    <a 
+                      href={msg.widget.data.url} 
+                      className="flex items-center gap-1 text-[10px] text-green-500 hover:text-white transition-colors uppercase tracking-widest"
+                    >
+                      Access Node <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                )}
+
+                {msg.widget.type === 'status' && (
+                  <div className="bg-black border border-green-500/30 p-4 rounded-lg font-mono">
+                    <div className="flex items-center gap-2 mb-3 text-green-500">
+                      <Activity className="w-4 h-4" />
+                      <span className="text-xs font-bold">SYSTEM_TELEMETRY</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-[10px]">
+                      <div className="flex flex-col">
+                        <span className="text-gray-600">UPTIME</span>
+                        <span className="text-green-400">{msg.widget.data.uptime}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600">NEURAL_LOAD</span>
+                        <span className="text-green-400">{msg.widget.data.neural_load}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600">SIGNAL_STABILITY</span>
+                        <span className="text-green-400">{msg.widget.data.signal_stability}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600">ACTIVE_NODES</span>
+                        <span className="text-green-400">{msg.widget.data.active_nodes}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {msg.widget.type === 'navigation' && (
+                  <div className="bg-green-500/5 border border-green-500/20 p-3 rounded-lg flex items-center gap-3">
+                    <div className="p-2 bg-green-500/10 rounded-full">
+                      <Zap className="w-4 h-4 text-green-500" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-gray-500 uppercase">Executing Protocol</span>
+                      <span className="text-xs text-green-400 font-bold">NAVIGATE_TO: {msg.widget.data.page.toUpperCase()}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ))}
         {isThinking && (

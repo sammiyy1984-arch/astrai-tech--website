@@ -32,6 +32,14 @@ export const translations = {
       readMore: "Read Record",
       posts: [
         {
+          id: "B_AGENT_02",
+          date: "2026.02.28",
+          title: "The Rise of Agentic Workflows: Beyond Simple Chat",
+          category: "System Architecture",
+          excerpt: "AI is transitioning from passive responders to active agents. By chain-of-thought reasoning and tool use, we are building systems that don't just talk, but execute.",
+          content: "The paradigm of AI interaction is shifting. We are moving away from 'Prompt-Response' cycles towards 'Goal-Execution' loops. This is what we call Agentic Workflows.\n\nIn the Astrai ecosystem, this means our models are no longer confined to generating text. They are equipped with 'Hands'—API integrations, database access, and recursive self-correction loops. When a goal is set, the agent decomposes it into sub-tasks, selects the appropriate tools, and iterates until the objective is met.\n\nThis architecture requires a fundamental rethink of system reliability. We are implementing 'Guardrail Layers' that monitor agent intent in real-time, ensuring that autonomous execution remains within safe operational parameters. The future of the web is not a collection of pages, but a swarm of coordinated agents working on your behalf."
+        },
+        {
           id: "B_CHIP_01",
           date: "2026.02.22",
           title: "Silicon Sovereignty: The Next Phase of Compute Architecture",
@@ -120,6 +128,12 @@ export const translations = {
       homeLink: "> Access System Logs",
       list: [
         {
+          version: 'v2.6.0',
+          module: '[Agentic Core]',
+          date: '2026-02-28',
+          content: 'Recursive goal-decomposition protocol deployed. Autonomous tool-selection logic active.'
+        },
+        {
           version: 'v2.5.0',
           module: '[Neural Link]',
           date: '2026-02-22',
@@ -183,6 +197,14 @@ export const translations = {
       subtitle: "來自 Astrai Core 的深度洞察、案例分析與系統更新。",
       readMore: "讀取記錄",
       posts: [
+        {
+          id: "B_AGENT_02",
+          date: "2026.02.28",
+          title: "智能體工作流的興起：超越簡單對話",
+          category: "系統架構",
+          excerpt: "AI 正在從被動的響應者轉變為主動的智能體。通過思維鏈推理和工具調用，我們正在構建不僅會說話，而且會執行的系統。",
+          content: "AI 交互的範式正在發生轉移。我們正從「提示-響應」循環轉向「目標-執行」閉環。這就是我們所說的智能體工作流 (Agentic Workflows)。\n\n在 Astrai 生態系統中，這意味著我們的模型不再局限於生成文本。它們配備了「手腳」——API 集成、數據庫訪問和遞歸自我修正循環。當設定一個目標時，智能體會將其分解為子任務，選擇合適的工具，並不斷迭代直到達成目標。\n\n這種架構需要對系統可靠性進行根本性的重新思考。我們正在實施「護欄層」(Guardrail Layers)，實時監控智能體的意圖，確保自主執行保持在安全的運行參數範圍內。網絡的未來不是頁面的集合，而是為你工作的協調智能體集群。"
+        },
         {
           id: "B_CHIP_01",
           date: "2026.02.22",
@@ -271,6 +293,12 @@ export const translations = {
       header: "> /system_logs",
       homeLink: "> 訪問系統日誌",
       list: [
+        {
+          version: 'v2.6.0',
+          module: '[智能體核心]',
+          date: '2026-02-28',
+          content: '遞歸目標分解協議已部署。自主工具選擇邏輯已激活。'
+        },
         {
           version: 'v2.5.0',
           module: '[神經鏈接]',

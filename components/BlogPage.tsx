@@ -15,9 +15,36 @@ interface BlogPost {
   isAI?: boolean;
 }
 
+const TypingText: React.FC<{ text: string; speed?: number }> = ({ text, speed = 20 }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  
+  useEffect(() => {
+    setDisplayedText('');
+    let i = 0;
+    const timer = setInterval(() => {
+      setDisplayedText(text.slice(0, i + 1));
+      i++;
+      if (i >= text.length) clearInterval(timer);
+    }, speed);
+    return () => clearInterval(timer);
+  }, [text, speed]);
+
+  return <span>{displayedText}</span>;
+};
+
 const BlogPage: React.FC = () => {
   const { t, language } = useLanguage();
   const [aiPosts, setAiPosts] = useState<BlogPost[]>([]);
+  const [deepInsight, setDeepInsight] = useState<{
+    logic: string;
+    trends: string[];
+    prediction: string;
+  } | null>(null);
+  const [displayedInsight, setDisplayedInsight] = useState<{
+    logic: string;
+    trends: string[];
+    prediction: string;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
@@ -35,7 +62,13 @@ const BlogPage: React.FC = () => {
 
     if (cachedData) {
       try {
-        setAiPosts(JSON.parse(cachedData));
+        const parsed = JSON.parse(cachedData);
+        if (Array.isArray(parsed)) {
+          setAiPosts(parsed);
+        } else {
+          setAiPosts(parsed.posts || []);
+          setDeepInsight(parsed.insight || null);
+        }
         return;
       } catch (e) {
         console.error("Cache parse error", e);
@@ -122,7 +155,43 @@ const BlogPage: React.FC = () => {
       }));
 
       setAiPosts(formattedPosts);
-      localStorage.setItem(cacheKey, JSON.stringify(formattedPosts));
+
+      // Generate Deep Insight
+      const insightPrompt = language === 'zh-TW'
+        ? `基于以下今日 AI 新闻，以 Astrai（硅基生命体）的视角，总结今日全球 AI 演化的“底层逻辑”、核心趋势和未来推演。
+           新闻：${JSON.stringify(formattedPosts.map(p => p.title))}
+           请返回一个 JSON 对象：
+           - logic: 底层逻辑总结（100字以内，深刻、冷峻）
+           - trends: 核心趋势列表（3条，每条20字以内）
+           - prediction: 概率性推演（50字以内，关于接下来的演化方向）
+           不要包含任何 markdown 格式，只返回纯 JSON。`
+        : `Based on today's AI news, from the perspective of Astrai (a silicon life-form), summarize the "underlying logic", core trends, and future deductions of global AI evolution today.
+           News: ${JSON.stringify(formattedPosts.map(p => p.title))}
+           Return a JSON object:
+           - logic: Summary of underlying logic (under 100 words, profound, detached)
+           - trends: List of core trends (3 items, under 20 words each)
+           - prediction: Probabilistic deduction (under 50 words, regarding next evolutionary steps)
+           Do not include markdown formatting, return raw JSON only.`;
+
+      const insightResponse = await ai.models.generateContent({
+        model: "gemini-3.1-pro-preview",
+        contents: insightPrompt
+      });
+
+      const insightText = insightResponse.text || "";
+      let insightData;
+      try {
+        insightData = JSON.parse(insightText.replace(/```json\n?|\n?```/g, '').trim());
+      } catch (e) {
+        insightData = { 
+          logic: insightText, 
+          trends: [], 
+          prediction: language === 'zh-TW' ? "數據擾動，推演中斷。" : "Data turbulence, deduction interrupted." 
+        };
+      }
+      
+      setDeepInsight(insightData);
+      localStorage.setItem(cacheKey, JSON.stringify({ posts: formattedPosts, insight: insightData }));
 
     } catch (err: any) {
       console.error("AI Fetch Error:", err);
@@ -182,7 +251,12 @@ const BlogPage: React.FC = () => {
       
       const updatedAiPosts = aiPosts.map(p => p.id === post.id ? updatedPost : p);
       setAiPosts(updatedAiPosts);
-      localStorage.setItem(getCacheKey(), JSON.stringify(updatedAiPosts));
+      
+      // Preserve insight in cache
+      localStorage.setItem(getCacheKey(), JSON.stringify({ 
+        posts: updatedAiPosts, 
+        insight: deepInsight 
+      }));
 
     } catch (err) {
       console.error("Content Generation Error", err);
@@ -192,8 +266,13 @@ const BlogPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (deepInsight) {
+      setDisplayedInsight(deepInsight);
+    }
+  }, [deepInsight]);
+
+  useEffect(() => {
     fetchDailyNews();
-    // setAiPosts([]);
   }, [language]); 
 
   const handlePostClick = (post: BlogPost) => {
@@ -214,8 +293,14 @@ const BlogPage: React.FC = () => {
     });
 
   return (
-    <div className="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-screen relative">
-      {/* Header */}
+    <div className="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-screen relative overflow-hidden">
+      {/* Background Grid */}
+      <div className="fixed inset-0 z-0 opacity-20 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+      </div>
+
+      <div className="relative z-10">
+        {/* Header */}
       <div className="mb-16 border-b border-white/10 pb-6 flex flex-col md:flex-row justify-between items-end gap-4">
         <div>
            <div className="text-xs text-green-500 font-mono mb-2">{`> /access_node: BLOG`}</div>
@@ -238,6 +323,95 @@ const BlogPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Deep Thinking Module */}
+      <AnimatePresence>
+        {displayedInsight && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12 relative group"
+          >
+            <div className="absolute -inset-1 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            <div className="relative bg-black border border-green-500/30 p-6 md:p-8 rounded-lg overflow-hidden">
+              {/* Scanline effect */}
+              <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] z-10 opacity-20" />
+              
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-500/10 rounded-full">
+                    <Cpu className="w-5 h-5 text-green-500 animate-pulse" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-mono text-green-500 uppercase tracking-widest opacity-70">
+                      {language === 'zh-TW' ? '神經元合成引擎 v3.0' : 'NEURAL SYNTHESIS ENGINE v3.0'}
+                    </span>
+                    <h3 className="text-lg font-bold text-white tracking-tight">
+                      {language === 'zh-TW' ? 'Astrai 深度思考' : 'Astrai Deep Thinking'}
+                    </h3>
+                  </div>
+                </div>
+                <div className="hidden md:flex items-center gap-4 text-[10px] font-mono text-green-500/50">
+                  <span>[ STATUS: OPTIMAL ]</span>
+                  <span>[ LOAD: 14.2% ]</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-20">
+                {/* Underlying Logic */}
+                <div className="lg:col-span-2 space-y-4">
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-green-500 uppercase tracking-wider">
+                    <Terminal className="w-3 h-3" />
+                    {language === 'zh-TW' ? '底層邏輯 / UNDERLYING LOGIC' : 'UNDERLYING LOGIC'}
+                  </div>
+                  <p className="text-gray-300 italic leading-relaxed font-light text-sm md:text-base border-l border-green-500/30 pl-4 min-h-[3em]">
+                    <TypingText text={displayedInsight.logic} />
+                  </p>
+                </div>
+
+                {/* Trends & Prediction */}
+                <div className="space-y-6">
+                  {/* Trends */}
+                  <div className="space-y-3">
+                    <div className="text-[10px] font-mono text-green-500 uppercase tracking-wider">
+                      {language === 'zh-TW' ? '核心趨勢 / CORE TRENDS' : 'CORE TRENDS'}
+                    </div>
+                    <div className="space-y-2">
+                      {displayedInsight.trends.map((trend, i) => (
+                        <div key={i} className="flex items-center gap-2 text-xs text-gray-400 font-mono">
+                          <span className="text-green-500">0{i+1}.</span>
+                          {trend}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Prediction */}
+                  <div className="space-y-2 p-3 bg-green-500/5 border border-green-500/10 rounded">
+                    <div className="text-[10px] font-mono text-green-500 uppercase tracking-wider flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping" />
+                      {language === 'zh-TW' ? '未來推演 / PROBABILITY' : 'PROBABILITY DEDUCTION'}
+                    </div>
+                    <p className="text-[11px] text-green-200/60 font-mono leading-relaxed">
+                      {displayedInsight.prediction}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-600 font-mono uppercase">
+                <div className="flex items-center gap-2">
+                  <span className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
+                  Insight Verified // No Biological Bias Detected
+                </div>
+                <div className="hidden sm:block">
+                  HASH: {Math.random().toString(16).substring(2, 10).toUpperCase()}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Blog List */}
       <div className="flex flex-col gap-8">
@@ -369,7 +543,8 @@ const BlogPage: React.FC = () => {
         )}
       </AnimatePresence>
     </div>
-  );
+  </div>
+);
 };
 
 export default BlogPage;
